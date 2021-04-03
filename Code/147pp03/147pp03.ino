@@ -16,7 +16,7 @@ char ver[ ] = "147pp03";
 #define lo_max_freq 9900000UL // Максимальная частота опоры, Гц.
 #define lo_min_freq 1000000UL // Минимальная частота опоры, Гц.
 #define min_hardware_freq 10 // *100KHz Минимальный железный предел частоты диапазона VFO
-#define max_hardware_freq 250 // *100KHz Максимальный железный предел частоты диапазона VFO
+#define max_hardware_freq 300 // *100KHz Максимальный железный предел частоты диапазона VFO
 #define ONE_WIRE_BUS 15 // Порт датчика температуры
 #define myEncBtn 4 // Порт нажатия кноба.
 #define mypowerpin 16 // Порт показометра мощности. А0
@@ -62,8 +62,8 @@ struct general_set {
 // Диапазонные настройки
 struct band_set {
   unsigned long vfo_freq_set = 7100000UL; // Начальная частота VFO при первом включении.
-  byte min_freq_set = 15; // *100KHz Минимальный предел частоты диапазона VFO.
-  byte max_freq_set = 80; // *100KHz Максимальный предел частоты диапазона VFO.
+  unsigned int min_freq_set = 15; // *100KHz Минимальный предел частоты диапазона VFO.
+  unsigned int max_freq_set = 80; // *100KHz Максимальный предел частоты диапазона VFO.
   byte bpf_set = 0; // Канал BPF
 } band_setting;
 #define vfo_freq band_setting.vfo_freq_set

@@ -1,4 +1,4 @@
-char ver[ ] = "147pp03";
+char ver[ ] = "147pp04";
 
 //#define SI_OVERCLOCK 750000000L
 #define ENCODER_OPTIMIZE_INTERRUPTS
@@ -46,6 +46,7 @@ struct general_set {
   int Si_Xtall_calFreq_set = 5850; // Начальная частота калибровки кварца, Гц.
   byte batt_cal_set = 208; // Начальная калибровка вольтметра.
   boolean reverse_encoder_set = false; //Реверс энкодера.
+  byte mem_enc_div = 4; // Делитель импульсов энкодера
   int temp_cal = -2; //калибровка датчика температуры
 } general_setting;
 
@@ -57,6 +58,7 @@ struct general_set {
 #define Si_Xtall_calFreq general_setting.Si_Xtall_calFreq_set
 #define batt_cal general_setting.batt_cal_set
 #define reverse_encoder general_setting.reverse_encoder_set
+#define mem_enc_div general_setting.mem_enc_div
 #define temp_cal general_setting.temp_cal
 
 // Диапазонные настройки
@@ -77,6 +79,7 @@ struct band_set {
 byte menu = 0; //Начальное положение меню.
 unsigned int arraystp[] = {1, 10, 50, 100, 1000, 10000}; //шаги настройки * 10 герц.
 
+byte enc_div;
 byte mypower;
 byte mybatt;
 int8_t temperature;
@@ -93,7 +96,6 @@ boolean timesetup = false;
 boolean actfmenuf = false;
 boolean bpfUpdate = false;
 
-// unsigned long previousMillis = 0;
 unsigned long previousdsp = 0;
 unsigned long previoustemp = 0;
 unsigned long previoustime = 0;
@@ -129,6 +131,7 @@ void setup() {
   display.display();
   sensors.begin();
   memread();
+  enc_div = mem_enc_div;
   si5351init();
   si5351correction();
   vfosetup();
@@ -232,7 +235,7 @@ void pushknob () {  // Обработка нажатия на кноб
       else {
         menu ++; //Переходим на меню дальше
         if (menu == 3) menu = 0; //Если меню 3 выйти на главный экран
-        if (menu > 13) menu = 3; //Если меню больше 13 перейти на меню 3
+        if (menu > 14) menu = 3; //Если меню больше 13 перейти на меню 3
       }
       if (!number_of_bands && menu == 1) menu++; //Если диапазоны выключены - пропустить меню 1
     }
@@ -251,13 +254,18 @@ void storetomem() { // Если крутили енкодер, то через 1
 }
 
 void readencoder() { // работа с енкодером
-  long newPosition = myEnc.read() / 4;
+  long newPosition;
+  if (!menu){
+    newPosition = myEnc.read() / enc_div;
+  }
+  else {
+    newPosition = myEnc.read() / (enc_div*4);
+  }
   if (reverse_encoder) newPosition *= (-1);
-  if (newPosition != oldPosition) { // ЕСЛИ КРУТИЛИ энкодер
-
+  if (newPosition != oldPosition && digitalRead(myEncBtn)) { // ЕСЛИ КРУТИЛИ НЕ нажатый энкодер
     if (menu > 0 && menu < 3) actfmenuf = true; // Если крутили энкодер в быстром меню - флаг вверх!
     switch (menu) {
-
+      
       case 0: //Основная настройка частоты
         if (newPosition > oldPosition && vfo_freq <= max_freq * 100000UL) {
           if (vfo_freq % (arraystp[stp] * 10UL)) {
@@ -362,7 +370,13 @@ void readencoder() { // работа с енкодером
         newPosition *= (-1);
         break;
 
-      case 13: //Калибровка термодатчика
+      case 13: // Настройка делителя импульсов энкодера
+        if (newPosition > oldPosition && mem_enc_div < 255) mem_enc_div++;
+        if (newPosition < oldPosition && mem_enc_div > 1) mem_enc_div--;
+        mem_enc_div = constrain(mem_enc_div, 1, 255);
+        break;
+
+      case 14: //Калибровка термодатчика
         if (newPosition > oldPosition && temp_cal <= 30) temp_cal++;
         if (newPosition < oldPosition && temp_cal >= - 30) temp_cal--;
         temp_cal = constrain(temp_cal, -30, 30);
@@ -372,8 +386,8 @@ void readencoder() { // работа с енкодером
     actenc = millis();
     actencf = true;
     mainscreen();
-    oldPosition = newPosition;
   }
+  oldPosition = newPosition;
 }
 
 void powermeter () { // Измеритель уровня выхода
@@ -547,7 +561,7 @@ void mainscreen() { //Процедура рисования главного э�
       display.print("  Minute");
       break;
 
-    case 12: //Меню 13 - Reverse Encoder
+    case 12: //Меню 12 - Reverse Encoder
       if (reverse_encoder) {
         display.println("Yes");
       }
@@ -560,8 +574,15 @@ void mainscreen() { //Процедура рисования главного э�
       display.println("  Reverse Encoder");
       break;
 
+    case 13: //Меню 13 - Reverse Encoder
+      display.println(mem_enc_div);
+      display.setTextSize(1);
+      display.print(menu);
+      display.print("  Encoder Divider");
+      break;
 
-    case 13: //Калибровка термодатчика
+
+    case 14: //Меню 13 - Калибровка термодатчика
       display.println(temp_cal);
       display.setTextSize(1);
       display.print(menu);

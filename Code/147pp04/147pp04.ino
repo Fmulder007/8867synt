@@ -254,7 +254,7 @@ void storetomem() { // Если крутили енкодер, то через 1
 }
 
 void readencoder() { // работа с енкодером
-  long newPosition;
+    long newPosition;
   if (!menu){
     newPosition = myEnc.read() / enc_div;
   }

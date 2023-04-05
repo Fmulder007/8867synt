@@ -9,7 +9,7 @@ char ver[ ] = "147pp04";
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define OLED_I2C_ADRESS 0x3C // Display I2c adress
 
-#define max_number_of_bands	99 // Максимальное оличество диапазонов.
+#define max_number_of_bands	30 // Максимальное оличество диапазонов.
 #define max_bpf_set 7 // 0-7 каналы управления BPF 74hc595.
 #define Si_Xtall_Freq 27000000UL // Частота кварца si5351, Гц.
 #define si_cload SI5351_CRYSTAL_LOAD_8PF// 
@@ -17,10 +17,10 @@ char ver[ ] = "147pp04";
 #define lo_min_freq 1000000UL // Минимальная частота опоры, Гц.
 #define min_hardware_freq 10 // *100KHz Минимальный железный предел частоты диапазона VFO
 #define max_hardware_freq 300 // *100KHz Максимальный железный предел частоты диапазона VFO
-#define ONE_WIRE_BUS 15 // Порт датчика температуры
+#define ONE_WIRE_BUS 14 // Порт датчика температуры
 #define myEncBtn 4 // Порт нажатия кноба.
-#define mypowerpin 16 // Порт показометра мощности. А0
-#define mybattpin 14 // Порт датчика АКБ А1
+#define mypowerpin 15 // Порт показометра мощности. А0
+#define mybattpin 21 // Порт датчика АКБ А1
 #define txpin 17 //Порт датчика ТХ.
 
 #define dataPin 11 // DS 74hc595 controller pin
@@ -254,18 +254,13 @@ void storetomem() { // Если крутили енкодер, то через 1
 }
 
 void readencoder() { // работа с енкодером
-    long newPosition;
-  if (!menu){
-    newPosition = myEnc.read() / enc_div;
-  }
-  else {
-    newPosition = myEnc.read() / (enc_div*4);
-  }
+  long newPosition;
+  newPosition = myEnc.read() / enc_div;
   if (reverse_encoder) newPosition *= (-1);
   if (newPosition != oldPosition && digitalRead(myEncBtn)) { // ЕСЛИ КРУТИЛИ НЕ нажатый энкодер
     if (menu > 0 && menu < 3) actfmenuf = true; // Если крутили энкодер в быстром меню - флаг вверх!
     switch (menu) {
-      
+
       case 0: //Основная настройка частоты
         if (newPosition > oldPosition && vfo_freq <= max_freq * 100000UL) {
           if (vfo_freq % (arraystp[stp] * 10UL)) {
@@ -391,11 +386,13 @@ void readencoder() { // работа с енкодером
 }
 
 void powermeter () { // Измеритель уровня выхода
+  analogRead(mypowerpin);
   int rawpower = analogRead(mypowerpin);
   mypower = map(rawpower, 0, 1023, 0, 100);
 }
 
 void battmeter () { // Измеритель напряжения питания
+  analogRead(mybattpin);
   int rawbatt = analogRead(mybattpin);
   mybatt = map(rawbatt, 0, 1023, 0, batt_cal);
 }

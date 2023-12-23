@@ -484,7 +484,7 @@ void mainscreen() { //Процедура рисования главного э�
 
     // Инжменю!!!
 
-    case 3: //Меню 5 - Настройка min_freq
+    case 3: //Меню 3 - Настройка min_freq
       display.println(min_freq * 100);
       display.setTextSize(1);
       display.print(menu);
@@ -493,7 +493,7 @@ void mainscreen() { //Процедура рисования главного э�
       display.print("kHz");
       break;
 
-    case 4: //Меню 6 - Настройка maxfreq
+    case 4: //Меню 4 - Настройка maxfreq
       display.println(max_freq * 100);
       display.setTextSize(1);
       display.print(menu);
@@ -502,14 +502,14 @@ void mainscreen() { //Процедура рисования главного э�
       display.print("kHz");
       break;
 
-    case 5: //Меню 6 - Канал ДПФ
+    case 5: //Меню 5 - Канал ДПФ
       display.println(bpf_set);
       display.setTextSize(1);
       display.print(menu);
       display.print("  BPF Chanel 0-7");
       break;
 
-    case 6: //Меню 7 - Настройка LO гетеродина
+    case 6: //Меню 6 - Настройка LO гетеродина
       display.setTextSize(2);
       display.println(lo_freq);
       display.setTextSize(1);
@@ -519,7 +519,7 @@ void mainscreen() { //Процедура рисования главного э�
       display.print("Hz");
       break;
 
-    case 7: //Меню 8 - Настройка калибровки кварца
+    case 7: //Меню 7 - Настройка калибровки кварца
       display.println(Si_Xtall_calFreq);
       display.setTextSize(1);
       display.print(menu);
@@ -528,21 +528,21 @@ void mainscreen() { //Процедура рисования главного э�
       display.print("Hz");
       break;
 
-    case 8: //Меню 9 - Настройка калибровки по питанию
+    case 8: //Меню 8 - Настройка калибровки по питанию
       display.println(batt_cal);
       display.setTextSize(1);
       display.print(menu);
       display.print("  Batt Cal");
       break;
 
-    case 9: //Меню 10 - Количество диапазонов
+    case 9: //Меню 9 - Количество диапазонов
       display.println(number_of_bands);
       display.setTextSize(1);
       display.print(menu);
       display.print("  MAX Num Bands");
       break;
 
-    case 10: //Меню 11 - Настройка Часов
+    case 10: //Меню 10 - Настройка Часов
       if (tm.Hour < 10) display.print("0");
       display.println(tm.Hour);
       display.setTextSize(1);
@@ -550,7 +550,7 @@ void mainscreen() { //Процедура рисования главного э�
       display.print("  Hour");
       break;
 
-    case 11: //Меню 12 - Настройка Минут
+    case 11: //Меню 11 - Настройка Минут
       if (tm.Minute < 10) display.print("0");
       display.println(tm.Minute);
       display.setTextSize(1);
